@@ -64,40 +64,5 @@ npm run dev:full
 
 The backend will run on `http://localhost:5000` and frontend on `http://localhost:3000`
 
-## Project Structure
 
-```
-├── client/                 # React frontend
-│   ├── public/
-│   └── src/
-│       ├── components/    # React components
-│       ├── pages/         # Page components
-│       └── App.js
-├── controllers/           # Request handlers
-├── middleware/           # Custom middleware
-├── models/              # Database models
-├── routes/             # API routes
-├── seeders/           # Database seeders
-└── server.js         # Express server
-```
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-
-### Products
-- `GET /api/products` - Get all products (with pagination, search, filter)
-- `GET /api/products/:id` - Get single product
-- `POST /api/products` - Create new product
-- `PUT /api/products/:id` - Update product
-- `DELETE /api/products/:id` - Delete product
-
-### Categories
-- `GET /api/categories` - Get all categories
-
-## License
-
-MIT
 
