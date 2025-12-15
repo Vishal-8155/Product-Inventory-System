@@ -1,10 +1,8 @@
 # Product Inventory System
 
-A full-stack product inventory management system built with MERN stack (MongoDB, Express, React, Node.js).
-
 ## Features
 
-- User authentication (Sign up/Login)
+- User authentication (Sign up/Login) (I add this additionally)
 - Add, edit, and delete products
 - Multi-category support for products
 - Search products by name
