@@ -132,17 +132,12 @@ const ProductForm = ({ onProductAdded, editingProduct, onCancelEdit }) => {
         categories: []
       });
       
-      if (onProductAdded) {
-        onProductAdded();
-      }
-
-      if (onCancelEdit) {
-        onCancelEdit();
-      }
-      
       setTimeout(() => {
         setSuccessMessage('');
-      }, 3000);
+        if (onProductAdded) {
+          onProductAdded();
+        }
+      }, 1500);
       
     } catch (error) {
       if (error.response?.data?.message) {

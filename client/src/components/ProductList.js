@@ -71,12 +71,12 @@ const ProductList = ({ onEdit }) => {
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    setCurrentPage(1); // Reset to first page on search
+    setCurrentPage(1);
   };
 
   const handleCategoryFilterChange = (selectedOptions) => {
     setSelectedCategories(selectedOptions || []);
-    setCurrentPage(1); // Reset to first page on filter change
+    setCurrentPage(1);
   };
 
   const formatDate = (dateString) => {

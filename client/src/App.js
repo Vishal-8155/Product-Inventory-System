@@ -3,7 +3,7 @@ import './App.css';
 import ProductForm from './components/ProductForm';
 import ProductList from './components/ProductList';
 import Login from './pages/Login';
-import { Link, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Link, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 function App() {
   const [refresh, setRefresh] = useState(0);
@@ -12,6 +12,7 @@ function App() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -21,6 +22,12 @@ function App() {
     }
     setLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (location.pathname === '/inventory') {
+      setEditingProduct(null);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleEscape = (e) => {
@@ -45,15 +52,17 @@ function App() {
   const handleProductAdded = () => {
     setRefresh(prev => prev + 1);
     setEditingProduct(null);
+    navigate('/inventory');
   };
 
   const handleEdit = (product) => {
     setEditingProduct(product);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigate('/add-product');
   };
 
   const handleCancelEdit = () => {
     setEditingProduct(null);
+    navigate('/inventory');
   };
 
   const handleLogin = (userData) => {
@@ -184,10 +193,8 @@ function App() {
 
       <div className="container">
         <Routes>
-          {/* Default Route */}
           <Route path="/" element={<Navigate to="/add-product" />} />
 
-          {/* Add Product */}
           <Route
             path="/add-product"
             element={
@@ -199,7 +206,6 @@ function App() {
             }
           />
 
-          {/* Inventory */}
           <Route
             path="/inventory"
             element={
