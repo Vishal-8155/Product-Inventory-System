@@ -7,7 +7,7 @@ exports.getProducts = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
     
-    let query = {};
+    let query = { user: req.user._id };
     
     if (req.query.search) {
       query.name = { $regex: req.query.search, $options: 'i' };
@@ -47,7 +47,10 @@ exports.getProducts = async (req, res) => {
 
 exports.getProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id).populate('categories', 'name');
+    const product = await Product.findOne({ 
+      _id: req.params.id, 
+      user: req.user._id 
+    }).populate('categories', 'name');
     
     if (!product) {
       return res.status(404).json({ 
@@ -80,7 +83,8 @@ exports.createProduct = async (req, res) => {
     const { name, description, quantity, categories } = req.body;
     
     const existingProduct = await Product.findOne({ 
-      name: { $regex: new RegExp(`^${name}$`, 'i') } 
+      name: { $regex: new RegExp(`^${name}$`, 'i') },
+      user: req.user._id
     });
     
     if (existingProduct) {
@@ -94,7 +98,8 @@ exports.createProduct = async (req, res) => {
       name,
       description,
       quantity,
-      categories
+      categories,
+      user: req.user._id
     });
     
     const populatedProduct = await Product.findById(product._id).populate('categories', 'name');
@@ -126,13 +131,26 @@ exports.updateProduct = async (req, res) => {
     
     const { name } = req.body;
     
+    const existingProduct = await Product.findOne({ 
+      _id: req.params.id,
+      user: req.user._id
+    });
+    
+    if (!existingProduct) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Product not found or you do not have permission to update it' 
+      });
+    }
+    
     if (name) {
-      const existingProduct = await Product.findOne({ 
+      const duplicateProduct = await Product.findOne({ 
         name: { $regex: new RegExp(`^${name}$`, 'i') },
-        _id: { $ne: req.params.id }
+        _id: { $ne: req.params.id },
+        user: req.user._id
       });
       
-      if (existingProduct) {
+      if (duplicateProduct) {
         return res.status(400).json({ 
           success: false, 
           message: 'Product with this name already exists' 
@@ -140,18 +158,11 @@ exports.updateProduct = async (req, res) => {
       }
     }
     
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
+    const product = await Product.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
       req.body,
       { new: true, runValidators: true }
     ).populate('categories', 'name');
-    
-    if (!product) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Product not found' 
-      });
-    }
     
     res.json({ 
       success: true, 
@@ -169,12 +180,15 @@ exports.updateProduct = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
-    const product = await Product.findByIdAndDelete(req.params.id);
+    const product = await Product.findOneAndDelete({ 
+      _id: req.params.id, 
+      user: req.user._id 
+    });
     
     if (!product) {
       return res.status(404).json({ 
         success: false, 
-        message: 'Product not found' 
+        message: 'Product not found or you do not have permission to delete it' 
       });
     }
     

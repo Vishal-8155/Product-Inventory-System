@@ -4,7 +4,6 @@ const productSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Product name is required'],
-    unique: true,
     trim: true,
     maxlength: [100, 'Product name cannot exceed 100 characters']
   },
@@ -24,13 +23,20 @@ const productSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
     required: true
-  }]
+  }],
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  }
 }, {
   timestamps: true
 });
 
 productSchema.index({ name: 'text' });
 productSchema.index({ categories: 1 });
+productSchema.index({ user: 1 });
+productSchema.index({ user: 1, name: 1 }, { unique: true });
 
 module.exports = mongoose.model('Product', productSchema);
 
