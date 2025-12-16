@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const notFound = require('./middleware/notFound');
@@ -19,6 +20,14 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/categories', require('./routes/categoryRoutes'));
+
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'client/build')));
+  
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  });
+}
 
 app.use(notFound);
 app.use(errorHandler);

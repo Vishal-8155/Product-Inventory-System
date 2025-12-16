@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './Auth.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '/api';
+
 const Login = ({ onLogin }) => {
   const [formData, setFormData] = useState({
     email: '',
@@ -40,7 +42,7 @@ const Login = ({ onLogin }) => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData);
+      const response = await axios.post(`${API_URL}/auth/login`, formData);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       onLogin(response.data.user);
@@ -63,7 +65,7 @@ const Login = ({ onLogin }) => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', signupData);
+      const response = await axios.post(`${API_URL}/auth/register`, signupData);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       onLogin(response.data.user);
