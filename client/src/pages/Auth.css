@@ -105,6 +105,8 @@
   transition: all 0.2s ease;
   background: rgba(255, 255, 255, 0.9);
   color: #1A1D1F;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .password-input-wrapper input:focus {
@@ -128,6 +130,9 @@
   justify-content: center;
   color: #6F767E;
   transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
 }
 
 .password-toggle:hover {
@@ -147,6 +152,8 @@
   transition: all 0.2s ease;
   background: rgba(255, 255, 255, 0.9);
   color: #1A1D1F;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .auth-form input:not(.password-input-wrapper input):focus {
@@ -184,6 +191,9 @@
   transition: all 0.3s ease;
   margin-top: 0.5rem;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
 }
 
 .auth-btn:hover {
@@ -220,6 +230,8 @@
   margin-left: 0.25rem;
   text-decoration: none;
   transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .auth-link:hover {
@@ -290,6 +302,98 @@
   
   .auth-form .form-group {
     margin-bottom: 1.25rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .auth-card {
+    padding: 1.5rem 1rem;
+    border-radius: 16px;
+  }
+  
+  .auth-header h1 {
+    font-size: 1.375rem;
+  }
+  
+  .auth-header p {
+    font-size: 0.8125rem;
+  }
+  
+  .auth-form input,
+  .password-input-wrapper input {
+    padding: 0.75rem 0.875rem;
+  }
+  
+  .password-input-wrapper input {
+    padding-right: 2.75rem;
+  }
+  
+  .auth-btn {
+    padding: 0.75rem;
+  }
+  
+  .auth-footer {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 768px) {
+  .auth-card {
+    max-width: 500px;
+    padding: 3rem 2.75rem;
+  }
+}
+
+@media (max-width: 640px) and (orientation: landscape) {
+  .auth-container {
+    padding: 1rem;
+  }
+  
+  .auth-card {
+    padding: 2rem 1.5rem;
+    max-width: 90%;
+  }
+  
+  .auth-header {
+    margin-bottom: 1.5rem;
+  }
+  
+  .auth-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .auth-form .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .auth-footer {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+  }
+}
+
+@media (min-width: 769px) {
+  .auth-card {
+    max-width: 480px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .auth-btn:hover {
+    transform: none;
+  }
+  
+  .auth-btn:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+  
+  .auth-link:hover {
+    text-decoration: none;
+  }
+  
+  .auth-link:active {
+    opacity: 0.7;
   }
 }
 

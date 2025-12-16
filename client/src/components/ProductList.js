@@ -37,7 +37,7 @@ const ProductList = ({ onEdit }) => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      let url = `${API_URL}/products?page=${currentPage}&limit=10`;
+      let url = `${API_URL}/products?page=${currentPage}&limit=5`;
       
       if (searchTerm) {
         url += `&search=${encodeURIComponent(searchTerm)}`;
@@ -88,57 +88,50 @@ const ProductList = ({ onEdit }) => {
     });
   };
 
-  const customSelectStyles = {
-    control: (provided, state) => ({
-      ...provided,
+  const selectStyles = {
+    control: (base, state) => ({
+      ...base,
       padding: '0.375rem 0.5rem',
       borderRadius: '8px',
       border: state.isFocused ? '1px solid #377DFF' : '1px solid #EFEFEF',
       boxShadow: state.isFocused ? '0 0 0 3px rgba(55, 125, 255, 0.1)' : 'none',
       backgroundColor: '#FFFFFF',
       cursor: 'pointer',
-      '&:hover': {
-        borderColor: state.isFocused ? '#377DFF' : '#CBCBCB'
-      }
+      '&:hover': { borderColor: state.isFocused ? '#377DFF' : '#CBCBCB' }
     }),
-    option: (provided, state) => ({
-      ...provided,
+    option: (base, state) => ({
+      ...base,
       backgroundColor: state.isSelected ? '#377DFF' : state.isFocused ? '#F7F9FC' : 'white',
       color: state.isSelected ? 'white' : '#1A1D1F',
       cursor: 'pointer',
       padding: '0.75rem 1rem',
-      '&:active': {
-        backgroundColor: '#377DFF'
-      }
+      '&:active': { backgroundColor: '#377DFF' }
     }),
-    multiValue: (provided) => ({
-      ...provided,
+    multiValue: (base) => ({
+      ...base,
       backgroundColor: '#F4F4F4',
       borderRadius: '6px',
       padding: '0.125rem 0.25rem'
     }),
-    multiValueLabel: (provided) => ({
-      ...provided,
+    multiValueLabel: (base) => ({
+      ...base,
       color: '#1A1D1F',
       fontSize: '0.875rem',
       fontWeight: '500'
     }),
-    multiValueRemove: (provided) => ({
-      ...provided,
+    multiValueRemove: (base) => ({
+      ...base,
       color: '#6F767E',
       cursor: 'pointer',
-      '&:hover': {
-        backgroundColor: '#E8E8E8',
-        color: '#1A1D1F'
-      }
+      '&:hover': { backgroundColor: '#E8E8E8', color: '#1A1D1F' }
     }),
-    placeholder: (provided) => ({
-      ...provided,
+    placeholder: (base) => ({
+      ...base,
       color: '#9A9FA5',
       fontSize: '0.9375rem'
     }),
-    menu: (provided) => ({
-      ...provided,
+    menu: (base) => ({
+      ...base,
       borderRadius: '8px',
       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
       border: '1px solid #EFEFEF',
@@ -238,7 +231,7 @@ const ProductList = ({ onEdit }) => {
             value={selectedCategories}
             onChange={handleCategoryFilterChange}
             placeholder="Select categories to filter..."
-            styles={customSelectStyles}
+            styles={selectStyles}
             className="category-filter"
             menuPlacement="bottom"
           />
