@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_API_URL || '/api';
+import axios from '../utils/axios';
 
 const ProductList = ({ onEdit }) => {
   const [products, setProducts] = useState([]);
@@ -23,7 +21,7 @@ const ProductList = ({ onEdit }) => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${API_URL}/categories`);
+      const response = await axios.get('/categories');
       const categoryOptions = response.data.data.map(cat => ({
         value: cat._id,
         label: cat.name
@@ -37,7 +35,7 @@ const ProductList = ({ onEdit }) => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      let url = `${API_URL}/products?page=${currentPage}&limit=5`;
+      let url = `/products?page=${currentPage}&limit=5`;
       
       if (searchTerm) {
         url += `&search=${encodeURIComponent(searchTerm)}`;
@@ -61,7 +59,7 @@ const ProductList = ({ onEdit }) => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.delete(`${API_URL}/products/${id}`);
+        await axios.delete(`/products/${id}`);
         fetchProducts();
       } catch (error) {
         alert('Failed to delete product. Please try again.');

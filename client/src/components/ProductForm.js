@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import axios from 'axios';
-
-const API_URL = process.env.REACT_APP_API_URL || '/api';
+import axios from '../utils/axios';
 
 const ProductForm = ({ onProductAdded, editingProduct, onCancelEdit }) => {
   const [formData, setFormData] = useState({
@@ -61,7 +59,7 @@ const ProductForm = ({ onProductAdded, editingProduct, onCancelEdit }) => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${API_URL}/categories`);
+      const response = await axios.get('/categories');
       const categoryOptions = response.data.data.map(cat => ({
         value: cat._id,
         label: cat.name
@@ -171,10 +169,10 @@ const ProductForm = ({ onProductAdded, editingProduct, onCancelEdit }) => {
       };
       
       if (editingProduct) {
-        await axios.put(`${API_URL}/products/${editingProduct._id}`, productData);
+        await axios.put(`/products/${editingProduct._id}`, productData);
         setSuccessMessage('Product updated successfully!');
       } else {
-        await axios.post(`${API_URL}/products`, productData);
+        await axios.post('/products', productData);
         setSuccessMessage('Product added successfully!');
       }
       
