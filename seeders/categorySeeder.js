@@ -3,16 +3,16 @@ require('dotenv').config();
 const Category = require('../models/Category');
 
 const categories = [
-  { name: 'Electronics' },
-  { name: 'Clothing' },
-  { name: 'Food & Beverages' },
-  { name: 'Home & Garden' },
-  { name: 'Sports & Outdoors' },
-  { name: 'Books & Media' },
-  { name: 'Toys & Games' },
-  { name: 'Health & Beauty' },
-  { name: 'Automotive' },
-  { name: 'Office Supplies' }
+  { name: 'Electronics', slug: 'electronics' },
+  { name: 'Clothing', slug: 'clothing' },
+  { name: 'Food & Beverages', slug: 'food-beverages' },
+  { name: 'Home & Garden', slug: 'home-garden' },
+  { name: 'Sports & Outdoors', slug: 'sports-outdoors' },
+  { name: 'Books & Media', slug: 'books-media' },
+  { name: 'Toys & Games', slug: 'toys-games' },
+  { name: 'Health & Beauty', slug: 'health-beauty' },
+  { name: 'Automotive', slug: 'automotive' },
+  { name: 'Office Supplies', slug: 'office-supplies' }
 ];
 
 const seedCategories = async () => {
@@ -28,7 +28,7 @@ const seedCategories = async () => {
 
     process.exit(0);
   } catch (error) {
-    console.log('Error seeding categories');
+    console.log('Error seeding categories:', error.message);
     process.exit(1);
   }
 };

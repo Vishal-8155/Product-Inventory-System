@@ -93,11 +93,11 @@ const ProductList = ({ onEdit }) => {
       ...base,
       padding: '0.375rem 0.5rem',
       borderRadius: '8px',
-      border: state.isFocused ? '1px solid #377DFF' : '1px solid #EFEFEF',
-      boxShadow: state.isFocused ? '0 0 0 3px rgba(55, 125, 255, 0.1)' : 'none',
+      border: state.isFocused ? '1px solid #2c3e50' : '1px solid #2c3e50',
+      boxShadow: state.isFocused ? '0 0 0 3px rgba(44, 62, 80, 0.1)' : 'none',
       backgroundColor: '#FFFFFF',
       cursor: 'pointer',
-      '&:hover': { borderColor: state.isFocused ? '#377DFF' : '#CBCBCB' }
+      '&:hover': { borderColor: '#2c3e50' }
     }),
     option: (base, state) => ({
       ...base,
@@ -134,13 +134,13 @@ const ProductList = ({ onEdit }) => {
       ...base,
       borderRadius: '8px',
       boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-      border: '1px solid #EFEFEF',
+      border: '1px solid #2c3e50',
       marginTop: '0.5rem',
-      marginBottom: '0.5rem',
-      zIndex: 9999,
-      position: 'absolute',
-      width: '100%',
-      left: 0
+      marginBottom: '0.5rem'
+    }),
+    menuPortal: (base) => ({
+      ...base,
+      zIndex: 10000
     })
   };
 
@@ -241,7 +241,9 @@ const ProductList = ({ onEdit }) => {
             placeholder="Select categories to filter..."
             styles={selectStyles}
             className="category-filter"
-            menuPlacement="bottom"
+            menuPlacement="auto"
+            menuPortalTarget={document.body}
+            menuPosition="fixed"
           />
         </div>
       </div>

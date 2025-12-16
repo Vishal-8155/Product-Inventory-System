@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
+import ReactDOM from 'react-dom';
 import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_API_URL || '/api';
@@ -15,6 +15,8 @@ const ProductForm = ({ onProductAdded, editingProduct, onCancelEdit }) => {
   const [errors, setErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
   useEffect(() => {
     fetchCategories();
@@ -22,17 +24,40 @@ const ProductForm = ({ onProductAdded, editingProduct, onCancelEdit }) => {
 
   useEffect(() => {
     if (editingProduct) {
+      const selectedCats = editingProduct.categories.map(cat => ({
+        value: cat._id,
+        label: cat.name
+      }));
       setFormData({
         name: editingProduct.name,
         description: editingProduct.description,
         quantity: editingProduct.quantity,
-        categories: editingProduct.categories.map(cat => ({
-          value: cat._id,
-          label: cat.name
-        }))
+        categories: selectedCats
       });
+      setSelectedCategories(selectedCats);
     }
   }, [editingProduct]);
+
+  useEffect(() => {
+    if (isCategoryModalOpen) {
+      document.body.style.overflow = 'hidden';
+      
+      const handleEscape = (e) => {
+        if (e.key === 'Escape') {
+          setIsCategoryModalOpen(false);
+        }
+      };
+      
+      document.addEventListener('keydown', handleEscape);
+      
+      return () => {
+        document.body.style.overflow = 'unset';
+        document.removeEventListener('keydown', handleEscape);
+      };
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isCategoryModalOpen]);
 
   const fetchCategories = async () => {
     try {
@@ -58,14 +83,42 @@ const ProductForm = ({ onProductAdded, editingProduct, onCancelEdit }) => {
     }
   };
 
-  const handleCategoryChange = (selectedOptions) => {
+  const handleCategoryToggle = (category) => {
+    setSelectedCategories(prev => {
+      const exists = prev.find(cat => cat.value === category.value);
+      if (exists) {
+        return prev.filter(cat => cat.value !== category.value);
+      } else {
+        return [...prev, category];
+      }
+    });
+  };
+
+  const handleAddCategories = () => {
     setFormData(prev => ({
       ...prev,
-      categories: selectedOptions || []
+      categories: selectedCategories
     }));
     if (errors.categories) {
       setErrors(prev => ({ ...prev, categories: '' }));
     }
+    setIsCategoryModalOpen(false);
+  };
+
+  const handleOpenCategoryModal = () => {
+    setSelectedCategories(formData.categories);
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleRemoveCategory = (categoryToRemove) => {
+    const updatedCategories = formData.categories.filter(
+      cat => cat.value !== categoryToRemove.value
+    );
+    setFormData(prev => ({
+      ...prev,
+      categories: updatedCategories
+    }));
+    setSelectedCategories(updatedCategories);
   };
 
   const validateForm = () => {
@@ -170,61 +223,6 @@ const ProductForm = ({ onProductAdded, editingProduct, onCancelEdit }) => {
     }
   };
 
-  const selectStyles = {
-    control: (base, state) => ({
-      ...base,
-      padding: '0.375rem 0.5rem',
-      borderRadius: '8px',
-      border: state.isFocused ? '1px solid #377DFF' : '1px solid #EFEFEF',
-      boxShadow: state.isFocused ? '0 0 0 3px rgba(55, 125, 255, 0.1)' : 'none',
-      backgroundColor: '#FFFFFF',
-      cursor: 'pointer',
-      '&:hover': { borderColor: state.isFocused ? '#377DFF' : '#CBCBCB' }
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isSelected ? '#377DFF' : state.isFocused ? '#F7F9FC' : 'white',
-      color: state.isSelected ? 'white' : '#1A1D1F',
-      cursor: 'pointer',
-      padding: '0.75rem 1rem',
-      '&:active': { backgroundColor: '#377DFF' }
-    }),
-    multiValue: (base) => ({
-      ...base,
-      backgroundColor: '#F4F4F4',
-      borderRadius: '6px',
-      padding: '0.125rem 0.25rem'
-    }),
-    multiValueLabel: (base) => ({
-      ...base,
-      color: '#1A1D1F',
-      fontSize: '0.875rem',
-      fontWeight: '500'
-    }),
-    multiValueRemove: (base) => ({
-      ...base,
-      color: '#6F767E',
-      cursor: 'pointer',
-      '&:hover': { backgroundColor: '#E8E8E8', color: '#1A1D1F' }
-    }),
-    placeholder: (base) => ({
-      ...base,
-      color: '#9A9FA5',
-      fontSize: '0.9375rem'
-    }),
-    menu: (base) => ({
-      ...base,
-      borderRadius: '8px',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-      border: '1px solid #EFEFEF',
-      marginTop: '0.5rem',
-      marginBottom: '0.5rem',
-      zIndex: 9999,
-      position: 'absolute',
-      width: '100%',
-      left: 0
-    })
-  };
 
   return (
     <div className="product-form">
@@ -282,16 +280,30 @@ const ProductForm = ({ onProductAdded, editingProduct, onCancelEdit }) => {
         
         <div className="form-group">
           <label htmlFor="categories">Categories *</label>
-          <Select
-            isMulti
-            options={categories}
-            value={formData.categories}
-            onChange={handleCategoryChange}
-            placeholder="Select categories..."
-            styles={selectStyles}
-            className="category-select"
-            menuPlacement="bottom"
-          />
+          <div className="category-selector" onClick={handleOpenCategoryModal}>
+            {formData.categories.length > 0 ? (
+              <div className="selected-categories">
+                {formData.categories.map(category => (
+                  <span key={category.value} className="selected-category-chip">
+                    {category.label}
+                    <button
+                      type="button"
+                      className="remove-category-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveCategory(category);
+                      }}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span className="category-placeholder">Select categories...</span>
+            )}
+            <span className="category-dropdown-icon">▼</span>
+          </div>
           {errors.categories && <div className="error-message">{errors.categories}</div>}
         </div>
         
@@ -306,6 +318,46 @@ const ProductForm = ({ onProductAdded, editingProduct, onCancelEdit }) => {
           )}
         </div>
       </form>
+
+      {isCategoryModalOpen && ReactDOM.createPortal(
+        <div className="modal-overlay" onClick={() => setIsCategoryModalOpen(false)}>
+          <div className="category-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Select Categories</h3>
+              <button
+                type="button"
+                className="modal-close-btn"
+                onClick={() => setIsCategoryModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              {categories.map(category => (
+                <label key={category.value} className="category-checkbox-item">
+                  <input
+                    type="checkbox"
+                    checked={selectedCategories.some(cat => cat.value === category.value)}
+                    onChange={() => handleCategoryToggle(category)}
+                  />
+                  <span className="checkbox-custom"></span>
+                  <span className="category-name">{category.label}</span>
+                </label>
+              ))}
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="add-categories-btn"
+                onClick={handleAddCategories}
+              >
+                Add Categories
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };
