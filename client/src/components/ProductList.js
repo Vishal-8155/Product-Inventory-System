@@ -146,7 +146,9 @@ const ProductList = ({ onEdit }) => {
 
   const renderPagination = () => {
     const pages = [];
-    const maxVisiblePages = 5;
+    const isMobile = window.innerWidth <= 768;
+    const isSmallMobile = window.innerWidth <= 480;
+    const maxVisiblePages = isSmallMobile ? 2 : isMobile ? 3 : 5;
     
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
@@ -159,7 +161,7 @@ const ProductList = ({ onEdit }) => {
       pages.push(
         <button
           key={i}
-          className={`page-btn ${currentPage === i ? 'active' : ''}`}
+          className={`page-btn page-number ${currentPage === i ? 'active' : ''}`}
           onClick={() => setCurrentPage(i)}
         >
           {i}
@@ -170,37 +172,43 @@ const ProductList = ({ onEdit }) => {
     return (
       <div className="pagination">
         <button
-          className="page-btn"
+          className="page-btn nav-btn"
           onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
           disabled={currentPage === 1}
+          aria-label="Previous page"
         >
-          Previous
+          <span className="btn-text-full">Previous</span>
+          <span className="btn-text-short">Prev</span>
+          <span className="btn-icon">‹</span>
         </button>
         
-        {startPage > 1 && (
+        {!isSmallMobile && startPage > 1 && (
           <>
-            <button className="page-btn" onClick={() => setCurrentPage(1)}>1</button>
-            {startPage > 2 && <span style={{ padding: '0 0.5rem' }}>...</span>}
+            <button className="page-btn page-number" onClick={() => setCurrentPage(1)}>1</button>
+            {startPage > 2 && <span className="pagination-ellipsis">...</span>}
           </>
         )}
         
         {pages}
         
-        {endPage < totalPages && (
+        {!isSmallMobile && endPage < totalPages && (
           <>
-            {endPage < totalPages - 1 && <span style={{ padding: '0 0.5rem' }}>...</span>}
-            <button className="page-btn" onClick={() => setCurrentPage(totalPages)}>
+            {endPage < totalPages - 1 && <span className="pagination-ellipsis">...</span>}
+            <button className="page-btn page-number" onClick={() => setCurrentPage(totalPages)}>
               {totalPages}
             </button>
           </>
         )}
         
         <button
-          className="page-btn"
+          className="page-btn nav-btn"
           onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
           disabled={currentPage === totalPages}
+          aria-label="Next page"
         >
-          Next
+          <span className="btn-text-full">Next</span>
+          <span className="btn-text-short">Next</span>
+          <span className="btn-icon">›</span>
         </button>
       </div>
     );
@@ -244,47 +252,65 @@ const ProductList = ({ onEdit }) => {
         <div className="no-products">No products found</div>
       ) : (
         <>
-          <div className="products-grid">
-            {products.map(product => (
-              <div key={product._id} className="product-card">
-                <div className="product-header">
-                  <div>
-                    <h3 className="product-name">{product.name}</h3>
-                    <div className="product-date">
-                      Added on: {formatDate(product.createdAt)}
+          <div className="products-table-container">
+            <div className="products-table-wrapper">
+              <div className="products-table-header">
+                <div className="table-header-cell header-number">#</div>
+                <div className="table-header-cell header-name">Name</div>
+                <div className="table-header-cell header-description">Description</div>
+                <div className="table-header-cell header-quantity">Quantity</div>
+                <div className="table-header-cell header-categories">Categories</div>
+                <div className="table-header-cell header-date">Added On</div>
+                <div className="table-header-cell header-actions">Actions</div>
+              </div>
+              
+              <div className="products-table-body">
+                {products.map((product, index) => (
+                  <div key={product._id} className="product-row">
+                    <div className="table-cell cell-number">
+                      {(currentPage - 1) * 5 + index + 1}
+                    </div>
+                    <div className="table-cell cell-name">
+                      {product.name}
+                    </div>
+                    <div className="table-cell cell-description">
+                      {product.description}
+                    </div>
+                    <div className="table-cell cell-quantity">
+                      {product.quantity}
+                    </div>
+                    <div className="table-cell cell-categories">
+                      <div className="categories-container">
+                        {product.categories.map(category => (
+                          <span key={category._id} className="category-tag">
+                            {category.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="table-cell cell-date">
+                      {formatDate(product.createdAt)}
+                    </div>
+                    <div className="table-cell cell-actions">
+                      <div className="action-buttons">
+                        <button
+                          className="edit-btn"
+                          onClick={() => onEdit(product)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="delete-btn"
+                          onClick={() => handleDelete(product._id)}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div className="action-buttons">
-                    <button
-                      className="edit-btn"
-                      onClick={() => onEdit(product)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDelete(product._id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-                
-                <p className="product-description">{product.description}</p>
-                
-                <div className="product-quantity">
-                  Quantity: {product.quantity}
-                </div>
-                
-                <div className="categories-container">
-                  {product.categories.map(category => (
-                    <span key={category._id} className="category-tag">
-                      {category.name}
-                    </span>
-                  ))}
-                </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
           
           {totalPages > 1 && renderPagination()}
